@@ -15,7 +15,7 @@ time_vals = []
 
 
 class PingData:
-    """Initiates a ping request.
+    """Initiates a ping request.\n
     Once a PingData object has been created a method tracks how many times the ping
     function has been called.
     """
@@ -43,8 +43,8 @@ ax1.set_title('Ping returns (ms)')
 
 
 def animate(i):
-    """Gets the current time and logs the result in time_vals variable.
-    Calls the ping_once function and logs the response in average_response_list variable.
+    """Gets the current time and logs the result in time_vals variable.\n
+    Calls the ping_once function and logs the response in average_response_list variable.\n
     Then plots the x,y values onto the figure.
     """
     dt = datetime.now()
