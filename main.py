@@ -1,5 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+import matplotlib.path as mpath
+import matplotlib.dates as mdates
 import matplotlib as mpl
 import matplotlib.animation as animation
 from datetime import datetime
@@ -12,6 +15,8 @@ mpl.style.use('seaborn')  # Sets the matplotlib style as 'Seaborn'
 tagret = "192.168.0.1"
 average_response_list = []
 time_vals = []
+_count = 0
+players = []
 
 
 class PingData:
@@ -32,7 +37,7 @@ class PingData:
         response = ping(tagret, count=1, interval=0.25)
         self._counter(self._count)
         print(response)
-        return response.rtt_max_ms
+        return [response.rtt_max_ms, response.packet_loss]
 
 
 # Initiates the PingData object and creates the matplotlib figure/axes
@@ -48,14 +53,28 @@ def animate(i):
     Then plots the x,y values onto the figure.
     """
     dt = datetime.now()
-    ping_return = p.ping_once()
-    average_response_list.append(ping_return)
-    time_vals.append(dt)
-    ax1.plot(time_vals, average_response_list, 'green')
+    global _count, players
+    ping_return = p.ping_once() 
+    if ping_return[1] == 1:
+        average_response_list.append(average_response_list[-1])
+        time_vals.append(dt)
+        x_point = mdates.date2num(dt)
+        ax1.plot(time_vals, average_response_list, 'green')
+        ax1.add_patch(patches.Rectangle((x_point,average_response_list[-1]),width=0.00000765,height=2, color='red'))
+        _count += 1
+        average_ms = round((sum(average_response_list)/_count),2)
+        print(f'Average ping is: {average_ms}ms')
+    else:    
+        average_response_list.append(ping_return[0]) # Gets the 0th list of return from ping_once
+        time_vals.append(dt)
+        ax1.plot(time_vals, average_response_list, 'green')
+        _count += 1
+        average_ms = round((sum(average_response_list)/_count),2)
+        print(f'Average ping is: {average_ms}ms')
 
 
-# Repeats the animate function every 250 ms.
-ani = animation.FuncAnimation(fig, animate, interval=250)
+# Repeats the animate function every 100 ms.
+ani = animation.FuncAnimation(fig, animate, interval=100)
 
 plt.tight_layout()
 plt.show()
