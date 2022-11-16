@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-import matplotlib.path as mpath
 import matplotlib.dates as mdates
 import matplotlib as mpl
 import matplotlib.animation as animation
@@ -12,11 +11,10 @@ from pythonping import ping
 mpl.rcParams["toolbar"] = "None"
 mpl.style.use('seaborn')  # Sets the matplotlib style as 'Seaborn'
 
-tagret = "192.168.0.1"
+tagret = "8.8.8.8"
 average_response_list = []
 time_vals = []
 _count = 0
-players = []
 
 
 class PingData:
@@ -45,6 +43,7 @@ p = PingData()
 fig = plt.figure()
 ax1 = fig.add_subplot(1, 1, 1)
 ax1.set_title('Ping returns (ms)')
+ax1.set_ylim(0,100)
 
 
 def animate(i):
@@ -60,7 +59,7 @@ def animate(i):
         time_vals.append(dt)
         x_point = mdates.date2num(dt)
         ax1.plot(time_vals, average_response_list, 'green')
-        ax1.add_patch(patches.Rectangle((x_point,average_response_list[-1]),width=0.00000765,height=2, color='red'))
+        ax1.add_patch(patches.Rectangle((x_point,0), width=0.00000765, height=100, color='red'))
         _count += 1
         average_ms = round((sum(average_response_list)/_count),2)
         print(f'Average ping is: {average_ms}ms')
